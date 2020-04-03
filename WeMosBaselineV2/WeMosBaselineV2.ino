@@ -92,9 +92,6 @@ PubSubClient client(espClient);
 char msg1[20],msg2[20],msg3[20]; //value strings for temperature, humidity and light
 float temp, hum, light; //values for temperature, humidity and light
 
-//controls connections
-bool connectedToMqtt = false;
-
 int InvalidCtr = 0;
 
 void setup_wifi() {
@@ -167,8 +164,6 @@ void mqttConnect() {
       delay(5000);
     }
   }
-  connectedToMqtt = true;
-
 }
 
 
@@ -229,11 +224,10 @@ void loop() {
     setup_wifi();
   }
 
-  if(!connectedToMqtt){
+  if(!client.connected()) {
     //check if connected to MQTT server, if not try to reconnect
-    if (!client.connected()) {
-      mqttConnect();
-    }
+    Serial.println("Reconnecting to MQTT server...");
+    mqttConnect();
     //run MQTT tasks
     client.loop();
   }
