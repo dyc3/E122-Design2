@@ -93,7 +93,6 @@ char msg1[20],msg2[20],msg3[20]; //value strings for temperature, humidity and l
 float temp, hum, light; //values for temperature, humidity and light
 
 //controls connections
-bool connectedToWiFi = false;
 bool connectedToMqtt = false;
 
 int InvalidCtr = 0;
@@ -111,8 +110,6 @@ void setup_wifi() {
     delay(500);
     Serial.print(".");
   }
-  connectedToWiFi = true;
-  randomSeed(micros());  //insure random call later on is random
 
   Serial.println(""); Serial.println("WiFi connected");
   //output IP address assigned by WiFi access point/router
@@ -173,8 +170,8 @@ void mqttConnect() {
 
 
 //replace XXXX in MQTT topic with last 4 digits of MAC address
-void insertMAC(char* Topic){
-int posX = 0;
+void insertMAC(char* Topic) {
+  int posX = 0;
   int strLen = strlen(Topic);  //get length of topic
 
   //find first X in topic string, ie "E122/XXXX/Temperature"
@@ -208,9 +205,10 @@ void setup() {
   insertMAC(MQtopic2);  //replace "XXXX" with last 4 digits of MAC address
   insertMAC(MQtopic3);  //replace "XXXX" with last 4 digits of MAC address
 
-  if(connectedToWiFi == false){
+  if(WiFi.status() != WL_CONNECTED){
     setup_wifi();  //start WiFi
   }
+  randomSeed(micros()); // ensure random call later on is random
 
   dht.begin();   //initialize DHT-11 temperature/humidity sensor
 
