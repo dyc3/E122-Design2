@@ -2,8 +2,8 @@
  E122 - Baseline Wemos Firmware - Version 0.2
  Updated: Feb 15, 2019
 
- Integrated from components picked off the net by Prof.KP. 
- Check  the configuration section for what you can tinker with. 
+ Integrated from components picked off the net by Prof.KP.
+ Check  the configuration section for what you can tinker with.
  Modify code on your own risk.... But, ... do take risks....
 
 ********/
@@ -23,7 +23,7 @@
 #include "WiFiManager.h"
 #include "DHT.h"
 
-  //The ESP8266 recognizes different pins than what is labelled on the WeMos D1 
+  //The ESP8266 recognizes different pins than what is labelled on the WeMos D1
   #if defined(d1)  //Defines Wemos D1 R1 pins to GPIO pins
     #define D0 3
     #define D1 1
@@ -34,7 +34,7 @@
     #define D6 12
     #define D7 13
     #define D10 15
-  #endif 
+  #endif
   #if defined(d1_mini) //Defines Wemos D1 R2 pins to GPIO pins
     #define A0 0
     #define D0 16
@@ -49,8 +49,8 @@
   #endif
 
 //Set up the DHT11 (temperature/humidity sensor)
-#define DHTPIN D6  //PLUG THE DHT 11 ONLY INTO D5, D6, D7 on either D1-R1 or D1-R2 Board. 
-                   // DO NOT PLUG INTO OTHERS AS THE MAPPING IS NOT THE SAME. DHT11 WILL BURN. 
+#define DHTPIN D6  //PLUG THE DHT 11 ONLY INTO D5, D6, D7 on either D1-R1 or D1-R2 Board.
+                   // DO NOT PLUG INTO OTHERS AS THE MAPPING IS NOT THE SAME. DHT11 WILL BURN.
 #define DHTTYPE DHT11
 
 
@@ -72,7 +72,7 @@ const char* MQpassword = "hereboy";
 char* MQtopic1 = "E122/XXXX/Temperature";
 char* MQtopic2 = "E122/XXXX/Humidity";
 char* MQtopic3 = "E122/XXXX/Light";
-//Note that since this is a real Wemos board -- it runs forever as opposed to 
+//Note that since this is a real Wemos board -- it runs forever as opposed to
 // the fakemos -- http://www.dmi.stevens.edu/fakemos/
 
 
@@ -150,7 +150,7 @@ void mqttConnect() {
     // Create a random client ID
     String clientId = "ESP8266Client-";
     clientId += String(random(0xffff), HEX);
-    
+
     // Attempt to connect to MQTT server
     if (client.connect(clientId.c_str(),MQusername,MQpassword)) {
       Serial.println("connected");
@@ -158,7 +158,7 @@ void mqttConnect() {
       //client.publish(MQtopic1, "00000");
       // ... and resubscribe ---- Dont subscribe KP
       // client.subscribe("inTopic");
-      // #KP - No announments --- No Subscribes. 
+      // #KP - No announments --- No Subscribes.
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -168,7 +168,7 @@ void mqttConnect() {
     }
   }
   connectedToMqtt = true;
-  
+
 }
 
 
@@ -201,7 +201,7 @@ void setup() {
   };
   Serial.println("");
   Serial.println("Wemos POWERING UP ......... ");
-  
+
   Serial.print("Mac Address:"); Serial.println(board_info.mac());
 
   insertMAC(MQtopic1);  //replace "XXXX" with last 4 digits of MAC address
@@ -223,7 +223,7 @@ void setup() {
 //code in this function runs repeatedly
 void loop() {
 
-  if(connectedToMqtt == false){
+  if(!connectedToMqtt){
     //check if connected to MQTT server, if not try to reconnect
     if (!client.connected()) {
       mqttConnect();
@@ -244,10 +244,10 @@ void readSensors(){
   temp = dht.readTemperature(true);
   //read humidity from DHT-11 sensor
   hum = dht.readHumidity();
-    
+
   //if(temp > 1000) InvalidCtr++;
   //Serial.print("InvalidCtr="); Serial.println(InvalidCtr);
-  
+
   //read light sensor at A0 connection, value will be 0 to 1023
   //(float) is a typecast to convert the returned integer to a float
   light = (float) analogRead(A0);
@@ -267,16 +267,16 @@ void readSensors(){
   Serial.print("Published :" ); Serial.print(MQtopic1);
   Serial.print(" with value: " ); Serial.println(msg1);
   client.publish(MQtopic1, msg1);  //publish temperature to MQTT server
-    
+
   Serial.print("Published :" ); Serial.print(MQtopic2);
   Serial.print(" with value: " ); Serial.println(msg2);
   client.publish(MQtopic2, msg2);  //publish humidity to MQTT server
-    
+
   Serial.print("Published :" ); Serial.print(MQtopic3);
   Serial.print(" with value: " ); Serial.println(msg3);
   client.publish(MQtopic3, msg3);  //publish light voltage to MQTT server
   Serial.println("");
-  
+
   delay(INTERVAL);  //wait to publish data again
 
 }
