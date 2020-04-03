@@ -105,11 +105,14 @@ void setup_wifi() {
 
   //connect to WiFi
   WiFi.begin(ssid, password);
-  //output a "." every 500ms until connection established
+  bool toggle = false;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    toggle = !toggle;
+    digitalWrite(BUILTIN_LED, toggle);
   }
+  digitalWrite(BUILTIN_LED, LOW);
 
   Serial.println(""); Serial.println("WiFi connected");
   //output IP address assigned by WiFi access point/router
@@ -220,6 +223,11 @@ void setup() {
 
 //code in this function runs repeatedly
 void loop() {
+
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Disconnected from WiFi, reconnecting...");
+    setup_wifi();
+  }
 
   if(!connectedToMqtt){
     //check if connected to MQTT server, if not try to reconnect
