@@ -255,10 +255,8 @@ void readSensors(){
 
   //convert values to strings
   // 20 specifies max string size
-  // %d specifies an integer (non-fraction) conversion
-  // (int) is a "type cast" to convert a float to an integer
-  snprintf (msg1, 20, "%d", (int) temp);
-  snprintf (msg2, 20, "%d", (int) hum);
+  snprintf (msg1, 20, "%.1f", temp);
+  snprintf (msg2, 20, "%d", (int)hum);
   snprintf (msg3, 20, "%5.3f", light);  //5.3 for "0.000" format
 
   //output MQTT Topic and Message to serial monitor for diagnostics

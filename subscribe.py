@@ -12,7 +12,7 @@ def on_subscribe(client, userdata, mid, granted_qos):
 	print(f"Subscribed {mid}")
 
 def on_message(client, userdata, msg):
-	topic, payload = msg.topic, float(msg.payload) if "Light" in msg.topic else int(msg.payload)
+	topic, payload = msg.topic, int(msg.payload) if "Humidity" in msg.topic else float(msg.payload)
 	print(f"{topic}: {payload}")
 
 def main():
