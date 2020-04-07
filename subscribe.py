@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 import paho.mqtt.client as mqtt
+import datetime
+from pathlib import Path
 
+data_path = Path("data")
 topics = [x.replace("XXXX", "6754") for x in ["E122/XXXX/Temperature", "E122/XXXX/Humidity", "E122/XXXX/Light"]]
+output_paths = dict(zip(topics, [f"{data_path}/{topic.replace('/', '_')}.csv" for topic in topics]))
+
+if not data_path.exists():
+	data_path.mkdir()
 
 def on_connect(client, userdata, flags, rc):
 	print(f"Connected with result code {rc}")
@@ -14,6 +21,8 @@ def on_subscribe(client, userdata, mid, granted_qos):
 def on_message(client, userdata, msg):
 	topic, payload = msg.topic, int(msg.payload) if "Humidity" in msg.topic else float(msg.payload)
 	print(f"{topic}: {payload}")
+	with Path(output_paths[topic]).open("w+") as f:
+		f.write(f"{datetime.datetime.now()},{payload}")
 
 def main():
 	client = mqtt.Client()
